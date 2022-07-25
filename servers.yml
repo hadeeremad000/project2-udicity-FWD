@@ -48,15 +48,21 @@ Resources:
   WebAppLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
+      IamInstanceProfile: arn:aws:iam::058501725308:instance-profile/EC2-S3-readaccess
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           sudo apt-get update -y
-          sudo apt-get install apache2 -y
+          sudo apt-get install apache2 unzip -y
           sudo systemctl start apache2.service
-          echo "it works! Udagram, Udacity" > /var/www/html/index.html                    
+          sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          sudo unzip awscliv2.zip
+          sudo ./aws/install
+          sudo rm -f /var/www/index.html
+          sudo aws s3 cp s3://fwdudicityproject3058501725308/index.html /var/www/html
+                             
       ImageId: !Ref AMItoUse
-      #KeyName: NewKeyPair ( created but not required in the project)
+      KeyName: NewKeyPair 
       SecurityGroups:
       - Ref: WebServerSecGroup
       InstanceType: t3.small
